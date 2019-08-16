@@ -1,0 +1,32 @@
+{
+    "name": "jhonyspicy/laravel-log-to-cloud-watch",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "jhonyspicy",
+            "email": "jhonyspicy@gmail.com"
+        }
+    ],
+    "require": {
+        "aws/aws-sdk-php": "^3.0.0",
+        "monolog/monolog": "^1.24",
+        "maxbanton/cwh": "^1.0"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^3.8"
+    },
+    "autoload": {
+        "psr-4": {
+            "jhonyspicy\\LaravelLogToCloudWatch\\": "src/"
+        },
+        "exclude-from-classmap": [
+            "/tests/",
+            "/database/"
+        ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "jhonyspicy\\LaravelLogToCloudWatch\\Tests\\": "tests/"
+        }
+    }
+}
