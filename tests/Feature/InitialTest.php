@@ -61,19 +61,13 @@ class InitialTest extends TestCase
     }
 
     /**
+     * AWSの CloudWatch -> ログ からログを確認することができます。
+     *
      * @test
      * @throws Exception
      */
     public function cloud_watch()
     {
-        $logFile = "testapp_local.log";
-        $appName = "TestApp01";
-        $facility = "local0";
-
-// Get instance ID:
-//        $url = "http://169.254.169.254/latest/meta-data/instance-id";
-//        $instanceId = file_get_contents($url);
-
         $awsCredentials = [
             'region' => 'ap-northeast-1',
             'version' => 'latest',
@@ -84,90 +78,26 @@ class InitialTest extends TestCase
         ];
 
         $cwClient = new CloudWatchLogsClient($awsCredentials);
-// Log group name, will be created if none
-        $cwGroupName = 'php-app-logs';
-// Log stream name, will be created if none
-//        $cwStreamNameInstance = $instanceId;
-// Instance ID as log stream name
-        $cwStreamNameApp = "TestAuthenticationApp";
-// Days to keep logs, 14 by default
-        $cwRetentionDays = 90;
 
-//        $cwHandlerInstanceNotice = new CloudWatch($cwClient, $cwGroupName, $cwStreamNameInstance, $cwRetentionDays, 10000, [ 'application' => 'php-testapp01' ],Logger::NOTICE);
-//        $cwHandlerInstanceError = new CloudWatch($cwClient, $cwGroupName, $cwStreamNameInstance, $cwRetentionDays, 10000, [ 'application' => 'php-testapp01' ],Logger::ERROR);
-        $cwHandlerAppNotice = new CloudWatch($cwClient, $cwGroupName, $cwStreamNameApp, $cwRetentionDays, 10000, [ 'application' => 'php-testapp01' ],Logger::NOTICE);
+        $cwHandlerAppNotice = new CloudWatch(
+            $cwClient,
+            'php-app-logs',
+            'TestAuthenticationApp',
+            90,
+            10000,
+            [ 'application' => 'php-testapp01' ],
+            Logger::NOTICE
+        );
 
         $logger = new Logger('PHP Logging');
 
         $formatter = new LineFormatter(null, null, false, true);
-        $syslogFormatter = new LineFormatter("%channel%: %level_name%: %message% %context% %extra%",null,false,true);
-        $infoHandler = new StreamHandler(__DIR__."/".$logFile, Logger::INFO);
-        $infoHandler->setFormatter($formatter);
 
-        $warnHandler = new SyslogHandler($appName, $facility, Logger::WARNING);
-        $warnHandler->setFormatter($syslogFormatter);
-
-//        $cwHandlerInstanceNotice->setFormatter($formatter);
-//        $cwHandlerInstanceError->setFormatter($formatter);
         $cwHandlerAppNotice->setFormatter($formatter);
 
-        $logger->pushHandler($warnHandler);
-        $logger->pushHandler($infoHandler);
-//        $logger->pushHandler($cwHandlerInstanceNotice);
-//        $logger->pushHandler($cwHandlerInstanceError);
         $logger->pushHandler($cwHandlerAppNotice);
 
-        $logger->info('Initial test of application logging.');
-        $logger->warn('Test of the warning system logging.');
-        $logger->notice('Application Auth Event: ',[ 'function'=>'login-action','result'=>'login-success' ]);
-//        $logger->notice('Application Auth Event: ',[ 'function'=>'login-action','result'=>'login-failure' ]);
-//        $logger->error('Application ERROR: System Error');$logFile = "testapp_local.log";
-//        $appName = "TestApp01";
-//        $facility = "local0";
-//
-//// Get instance ID:
-//        $url = "http://169.254.169.254/latest/meta-data/instance-id";
-//        $instanceId = file_get_contents($url);
-//
-//        $cwClient = new CloudWatchLogsClient($awsCredentials);
-//// Log group name, will be created if none
-//        $cwGroupName = 'php-app-logs';
-//// Log stream name, will be created if none
-//        $cwStreamNameInstance = $instanceId;
-//// Instance ID as log stream name
-//        $cwStreamNameApp = "TestAuthenticationApp";
-//// Days to keep logs, 14 by default
-//        $cwRetentionDays = 90;
-//
-//        $cwHandlerInstanceNotice = new CloudWatch($cwClient, $cwGroupName, $cwStreamNameInstance, $cwRetentionDays, 10000, [ 'application' => 'php-testapp01' ],Logger::NOTICE);
-//        $cwHandlerInstanceError = new CloudWatch($cwClient, $cwGroupName, $cwStreamNameInstance, $cwRetentionDays, 10000, [ 'application' => 'php-testapp01' ],Logger::ERROR);
-//        $cwHandlerAppNotice = new CloudWatch($cwClient, $cwGroupName, $cwStreamNameApp, $cwRetentionDays, 10000, [ 'application' => 'php-testapp01' ],Logger::NOTICE);
-//
-//        $logger = new Logger('PHP Logging');
-//
-//        $formatter = new LineFormatter(null, null, false, true);
-//        $syslogFormatter = new LineFormatter("%channel%: %level_name%: %message% %context% %extra%",null,false,true);
-//        $infoHandler = new StreamHandler(__DIR__."/".$logFile, Logger::INFO);
-//        $infoHandler->setFormatter($formatter);
-//
-//        $warnHandler = new SyslogHandler($appName, $facility, Logger::WARNING);
-//        $warnHandler->setFormatter($syslogFormatter);
-//
-//        $cwHandlerInstanceNotice->setFormatter($formatter);
-//        $cwHandlerInstanceError->setFormatter($formatter);
-//        $cwHandlerAppNotice->setFormatter($formatter);
-//
-//        $logger->pushHandler($warnHandler);
-//        $logger->pushHandler($infoHandler);
-//        $logger->pushHandler($cwHandlerInstanceNotice);
-//        $logger->pushHandler($cwHandlerInstanceError);
-//        $logger->pushHandler($cwHandlerAppNotice);
-//
-//        $logger->info('Initial test of application logging.');
-//        $logger->warn('Test of the warning system logging.');
-//        $logger->notice('Application Auth Event: ',[ 'function'=>'login-action','result'=>'login-success' ]);
-//        $logger->notice('Application Auth Event: ',[ 'function'=>'login-action','result'=>'login-failure' ]);
-//        $logger->error('Application ERROR: System Error');
+        $logger->notice('This is my test');
 
         $this->assertTrue(true);
     }
